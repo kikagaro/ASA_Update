@@ -79,6 +79,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                 print("\nTransferring file:\n" + str(source))
                 scp_transfer.transfer_file()
                 print("\nTransfer Complete\n")
+
     '''Transfering ASAOS and ROMMON Image'''
     transfer(asaos, dest_os_file, dest_file_system)
     if rstate is True:
