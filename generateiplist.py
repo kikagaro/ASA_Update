@@ -41,5 +41,5 @@ def generateips():
 
 print('Run this on noc as root user')
 print('ds')
-print('from philw.ASA_Update.generateiplist import generateiplist')
+print('from philw.ASA_Update.generateiplist import generateips')
 print('generateips()')
