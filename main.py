@@ -7,7 +7,7 @@ from os import path
 
 '''Test if list file exist'''
 if path.exists("list.txt"):
-    q = input('list.txt detected.\nDo you want to use list.txt? y/n\n')
+    q = input('list.txt detected.\nDo you want to use list.txt? [Y/n]\n')
     if q is 'y' or 'Y':
         clist = True
         lfile = open("list.txt", 'r')
