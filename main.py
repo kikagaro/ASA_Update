@@ -14,6 +14,7 @@ if path.exists("list.txt"):
         lines = lfile.readlines()
     else:
         clist = False
+        ip = input("What is the ASA IP?\n")
 else:
     clist = False
     ip = input("What is the ASA IP?\n")
