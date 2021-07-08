@@ -98,7 +98,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         for bline in bootlist:
             ssh_conn.send_config_set('no ' + bline)
     print("\nSending current boot commands")
-    full_file_name = "{}/{}".format(dest_file_system, dest_os_file)
+    full_file_name = "{}/{}".format(dest_file_system, asaos)
     boot_cmd = 'boot system {}'.format(full_file_name)
     output = ssh_conn.send_config_set([boot_cmd])
     print(output)
