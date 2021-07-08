@@ -103,7 +103,14 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
     boot_cmd = 'boot system {}'.format(full_file_name)
     output = ssh_conn.send_config_set([boot_cmd])
     print(output)
-
+    '''Disabling ROMMON upgrade for now as it requires a reload while applying.'''
+    """
+    if rstate is True:
+        print('Applying ROMMON upgrade')
+        output = ssh_conn.send_command('upgrade rommon ' + dest_file_system + '/' + dest_rfile)
+        output += ssh_conn.send_command('y')
+        print(output)
+    """
     print("\nVerifying state")
     output = ssh_conn.send_command('show boot')
     output1 = ssh_conn.send_command('show version | i Appliance Software')
