@@ -1,6 +1,6 @@
 #! /home/noc/bin/python
 
-from netmiko import ConnectHandler, FileTransfer, file_transfer
+from netmiko import ConnectHandler, FileTransfer
 import getpass
 import datetime
 from os import path
