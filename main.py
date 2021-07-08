@@ -1,5 +1,5 @@
 #! /home/noc/bin/python
-
+import scp
 from netmiko import ConnectHandler, FileTransfer
 import getpass
 import datetime
@@ -77,7 +77,10 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                 if not scp_transfer.verify_space_available():
                     raise ValueError("Insufficient space available on remote device")
                 print("\nTransferring file:\n" + str(source))
-                scp_transfer.transfer_file()
+                try:
+                    scp_transfer.transfer_file()
+                except scp.SCPException:
+                    pass
                 print("\nTransfer Complete\n")
 
     '''Transfering ASAOS and ROMMON Image'''
