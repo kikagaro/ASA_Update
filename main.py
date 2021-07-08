@@ -7,7 +7,7 @@ from os import path
 
 '''Test if list file exist'''
 if path.exists("list.txt"):
-    q = input('Do you want to use list.txt? y/n\n')
+    q = input('list.txt detected.\nDo you want to use list.txt? y/n\n')
     if q is 'y' or 'Y':
         clist = True
         lfile = open("list.txt", 'r')
@@ -23,7 +23,7 @@ count = 1
 """"Grabbing Variables"""
 username = 'automation'
 password = getpass.getpass('Automation Password?\n')
-sfile = input('What is the source file name?\n')
+sfile = input('What is the ASAOS source file name?\n')
 rcheck = input('Do you want to update the ROMMON image? [Y/n]\n')
 
 '''Check if ASAOS Image is good or not'''
