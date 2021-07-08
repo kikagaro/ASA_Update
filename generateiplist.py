@@ -2,8 +2,18 @@
 
 def generateips():
     from rancid.models import Device
+    from os import path
 
     names = '/home/noc/philw/ASA_Update/names.txt'
+    try:
+        if path.exists(names):
+            print('Names List exist.')
+        else:
+            print('Names List does not exist. please create the following file '
+                  'with the list of firewall hostnames:\n' + names)
+    except:
+        pass
+        exit()
 
     with open(names, 'r') as r:
         list = [line.strip() for line in r]
