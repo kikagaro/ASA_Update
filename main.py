@@ -5,7 +5,7 @@ import getpass
 import datetime
 from os import path
 
-"""Test if list file exist"""
+'''Test if list file exist'''
 if path.exists("list.txt"):
     q = input('Do you want to use list.txt? y/n\n')
     if q is 'y' or 'Y':
@@ -24,16 +24,28 @@ count = 1
 username = 'automation'
 password = getpass.getpass('Automation Password?\n')
 sfile = input('What is the source file name?\n')
+rcheck = input('Do you want to update the ROMMON image? [Y/n]\n')
 
-""""Check if ASAOS Image is good or not"""
+'''Check if ASAOS Image is good or not'''
 if path.exists(sfile):
     pass
 else:
     print("ASAOS Image supplied does not exist in supplied location\n Exiting...")
     exit()
+'''Check if ROMMON Image is good or not'''
+if rcheck is "Y" or "y":
+    rommonfile = input("What is the ROMMON file name?")
+    if path.exists(rommonfile):
+        rommon = True
+        pass
+    else:
+        print("ROMMON Image supplied does not exist in supplied location\n Exiting...")
+        exit()
+else:
+    rommon = False
 
 
-def main(ip, user, psd, asaos):
+def main(ip, user, psd, asaos, rstate=False, rfile=None):
     """Upgrade Script for ASA Devices"""
     start_time = datetime.datetime.now()
 
@@ -55,17 +67,23 @@ def main(ip, user, psd, asaos):
         exit()
 
     dest_file_system = 'disk0:'
-    dest_file = asaos
+    dest_os_file = asaos
 
-    with FileTransfer(ssh_conn, source_file=asaos, dest_file=dest_file,
-                      file_system=dest_file_system) as scp_transfer:
+    def transfer(source, destination, filesystem):
+        with FileTransfer(ssh_conn, source_file=source, dest_file=destination,
+                          file_system=filesystem) as scp_transfer:
 
-        if not scp_transfer.check_file_exists():
-            if not scp_transfer.verify_space_available():
-                raise ValueError("Insufficient space available on remote device")
-            print("\nTransferring file\n")
-            scp_transfer.transfer_file()
-            print("Transfer Complete\n")
+            if not scp_transfer.check_file_exists():
+                if not scp_transfer.verify_space_available():
+                    raise ValueError("Insufficient space available on remote device")
+                print("\nTransferring file:\n" + str(source))
+                scp_transfer.transfer_file()
+                print("\nTransfer Complete\n")
+    '''Transfering ASAOS and ROMMON Image'''
+    transfer(asaos, dest_os_file, dest_file_system)
+    if rstate is True:
+        dest_rfile = rfile
+        transfer(rfile, dest_rfile, dest_file_system)
     print("\nChecking for current boot lines and removing.")
     testb = ssh_conn.send_command('show run boot')
     if testb != "":
@@ -77,7 +95,7 @@ def main(ip, user, psd, asaos):
         for bline in bootlist:
             ssh_conn.send_config_set('no ' + bline)
     print("\nSending current boot commands")
-    full_file_name = "{}/{}".format(dest_file_system, dest_file)
+    full_file_name = "{}/{}".format(dest_file_system, dest_os_file)
     boot_cmd = 'boot system {}'.format(full_file_name)
     output = ssh_conn.send_config_set([boot_cmd])
     print(output)
@@ -110,7 +128,7 @@ if clist is True:
         count += 1
 else:
     print("Single run on IP")
-    main(ip, username, password, sfile)
+    main(ip, username, password, sfile, rommon, rommonfile)
 
 print("================")
 print("===End Script===")
