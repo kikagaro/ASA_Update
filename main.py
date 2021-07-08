@@ -35,7 +35,7 @@ else:
     exit()
 '''Check if ROMMON Image is good or not'''
 if rcheck is "Y" or "y":
-    rommonfile = input("What is the ROMMON file name?")
+    rommonfile = input("What is the ROMMON file name?\n")
     if path.exists(rommonfile):
         rommon = True
         pass
@@ -130,7 +130,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
 
 if clist is True:
     print("Loading from list of IPs")
-    for iline in lines.strip():
+    for iline in lines:
         print(iline)
     for ip in lines:
         print(str(count) + ": " + str(ip))
