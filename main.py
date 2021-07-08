@@ -68,7 +68,6 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         exit()
 
     dest_file_system = 'disk0:'
-    dest_os_file = asaos
 
     def transfer(source, destination, filesystem):
         with FileTransfer(ssh_conn, source_file=source, dest_file=destination,
@@ -85,10 +84,9 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                 print("\nTransfer Complete\n")
 
     '''Transfering ASAOS and ROMMON Image'''
-    transfer(asaos, dest_os_file, dest_file_system)
+    transfer(asaos, asaos, dest_file_system)
     if rstate is True:
-        dest_rfile = rfile
-        transfer(rfile, dest_rfile, dest_file_system)
+        transfer(rfile, rfile, dest_file_system)
     print("\nChecking for current boot lines and removing.")
     testb = ssh_conn.send_command('show run boot')
     if testb != "":
@@ -132,11 +130,11 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
 
 if clist is True:
     print("Loading from list of IPs")
-    for iline in lines:
+    for iline in lines.strip():
         print(iline)
-    for line in lines:
-        print(str(count) + ": " + str(line))
-        main(line, username, password, sfile)
+    for ip in lines:
+        print(str(count) + ": " + str(ip))
+        main(ip, username, password, sfile, rommon, rommonfile)
         count += 1
 else:
     print("Single run on IP")
