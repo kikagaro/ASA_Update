@@ -11,6 +11,7 @@ def generateips():
         else:
             print('Names List does not exist. please create the following file '
                   'with the list of firewall hostnames:\n' + names)
+            exit()
     except:
         pass
         exit()
@@ -18,13 +19,14 @@ def generateips():
     with open(names, 'r') as r:
         list = [line.strip() for line in r]
 
-    print(list)
+    print('List of names to lookup: \n' + list)
 
     listfile = "/home/noc/philw/ASA_Update/list.txt"
     i = 1
     iplist = []
 
     for name in list:
+        print('Returned Names and IPs:\n')
         devices = Device.objects.filter(devicetype__name='asa', rancid=True, name__icontains=name).order_by('-priority', 'name')
         for device in devices:
             ip = device.ip.__str__()
@@ -32,11 +34,11 @@ def generateips():
             print(i, device.name, ip)
             i += 1
 
-    print(iplist)
-
     with open(listfile, 'w') as lf:
         for ipl in iplist:
             lf.write('%s\n' % ipl)
+
+    print('List of IPs generated for devices:\n' + names)
 
 
 print('Run this on noc as root user')
