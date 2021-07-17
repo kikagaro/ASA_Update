@@ -19,19 +19,18 @@ def generateips():
     with open(names, 'r') as r:
         list = [line.strip() for line in r]
 
-    print('List of names to lookup: \n' + list)
+    print('List of names to lookup: \n' + str(list))
 
     listfile = "/home/noc/philw/ASA_Update/list.txt"
     i = 1
     iplist = []
 
     for name in list:
-        print('Returned Names and IPs:\n')
         devices = Device.objects.filter(devicetype__name='asa', rancid=True, name__icontains=name).order_by('-priority', 'name')
         for device in devices:
             ip = device.ip.__str__()
             iplist.append(ip)
-            print(i, device.name, ip)
+            print(i, device.name, ip + '\n')
             i += 1
 
     with open(listfile, 'w') as lf:
