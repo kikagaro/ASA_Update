@@ -92,15 +92,11 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
     def hwModel():
         output = ssh_conn.send_command('show run | i Hardware')
         print(output)
-        for x in output.strip('\n'):
-            print(x)
-            type(x)
-            print('1')
-            hwversion = re.search('ASA\d+', x)
-            print(hwversion)
-            type(hwversion)
-            print('2')
-            hwnum = hwversion[0].strip('ASA')
+        hwversion = re.search('ASA\d+', output.strip('\n'))
+        print(hwversion)
+        type(hwversion)
+        print('2')
+        hwnum = hwversion[0].strip('ASA')
         print(hwnum)
         print('3')
         return hwnum
