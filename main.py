@@ -116,13 +116,13 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                     check = False
                     failed.append(x)
         print(check)
-        exit()
         if not check:
             print('Invalid Crypyo Map Lines:')
             for v in failed:
                 print(v)
                 failed = []
             check = True
+        exit()
         print('Checking Crypto IKEV1 configs...')
         output = ssh_conn.send_command('sh run crypto ikev1')
         for x in output.split('\n'):
