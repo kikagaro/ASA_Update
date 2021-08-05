@@ -119,6 +119,8 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                 print(v)
                 failed = []
             check = True
+        else:
+            print("Pass")
         print('Checking Crypto IKEV1 configs...')
         output = ssh_conn.send_command('sh run crypto ikev1')
         for x in output.split('\n'):
@@ -129,10 +131,11 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         if not check:
             print('Found Ikev1 DH Group1 in config.')
             check = True
+        else:
+            print('Pass')
         print('Checking Crypto IKEV2 configs...')
         output = ssh_conn.send_command('sh run crypto ikev2')
         for x in output.split('\n'):
-            print(x)
             for c in cryptoIkev:
                 if re.match(c, x):
                     check = False
@@ -152,6 +155,8 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         if not hwCheck:
             print('5506 Model is V01/02/03. Replace instead of upgrade.')
             hwCheck = True
+        else:
+            print('Pass')
 
     """Running Error Check"""
     errorCheck()
