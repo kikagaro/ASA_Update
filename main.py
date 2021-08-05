@@ -73,7 +73,6 @@ def main(ip, user, psd):
         hwversion = re.search('ASA\d+', output.strip('\n'))
         hwnum = hwversion[0].strip('ASA')
         print('ASA Hardware Model: ' + hwnum)
-        print('Image to be used:\n' + asaImages[modelNum]['os'] + '\n')
         return hwnum
 
     def transfer(source, destination, filesystem, imageName):
@@ -174,6 +173,7 @@ def main(ip, user, psd):
 
     """Checking ASA Hardware Model for OS Images and file checking"""
     modelNum = hwModel()
+    print('Image to be used:\n' + asaImages[modelNum]['os'] + '\n')
     if modelNum == '5506':
         asa5506 = True
     else:
@@ -238,6 +238,7 @@ if clist is True:
     print("Loading from list of IPs")
     for iline in lines:
         print(iline.strip('\n'))
+    print('')
     for ip in lines:
         print(str(count) + ": " + str(ip))
         main(ip, username, password)
