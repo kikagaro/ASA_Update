@@ -91,6 +91,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
 
     def hwModel():
         output = ssh_conn.send_command('show run | i Hardware')
+        print(output)
         for x in output.strip('\n'):
             print(x)
             type(x)
