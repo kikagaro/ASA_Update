@@ -95,7 +95,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         for x in output.strip('\n'):
             print(x)
             type(x)
-            hwversion = re.findall('ASA\d+', x)
+            hwversion = re.search('ASA\d+', x)
             print(hwversion)
             type(hwversion)
             hwnum = hwversion[0].strip('ASA')
