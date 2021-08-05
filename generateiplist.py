@@ -30,7 +30,7 @@ def generateips():
         for device in devices:
             ip = device.ip.__str__()
             iplist.append(ip)
-            print(i, device.name, ip + '\n')
+            print(i, device.name, ip)
             i += 1
 
     with open(listfile, 'w') as lf:
