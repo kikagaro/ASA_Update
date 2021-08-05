@@ -236,8 +236,8 @@ def main(ip, user, psd):
 
 if clist is True:
     print("Loading from list of IPs")
-    for iline in lines.strip():
-        print(iline)
+    for iline in lines:
+        print(iline.strip('\n'))
     for ip in lines:
         print(str(count) + ": " + str(ip))
         main(ip, username, password)
