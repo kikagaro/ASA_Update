@@ -176,11 +176,13 @@ def main(ip, user, psd):
 
     """Checking ASA Hardware Model for OS Images and file checking"""
     modelNum = hwModel()
-    print('Image to be used:\n' + asaImages[modelNum]['os'] + '\n')
     if modelNum == '5506':
         asa5506 = True
     else:
         asa5506 = False
+    print('Image to be used:\n' + asaImages[modelNum]['os'] + '\n')
+    if asa5506:
+        print('Rommon image to be used: ' + asaImages[modelNum]['rommon'] + '\n')
     """Running Error Check"""
     if not errorCheck():
         '''Transferring ASAOS and ROMMON Image'''
