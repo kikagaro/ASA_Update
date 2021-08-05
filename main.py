@@ -109,25 +109,22 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         print('Checking Crypto map configs...')
         output = ssh_conn.send_command('sh run crypto map')
         for x in output.split('\n'):
-            print(x)
             for c in cryptoMap:
                 if re.match(c, x.strip()):
                     print('ERROR ERROR ERROR ERROR')
                     check = False
                     failed.append(x)
-        print(check)
         if not check:
             print('Invalid Crypyo Map Lines:')
             for v in failed:
                 print(v)
                 failed = []
             check = True
-        exit()
         print('Checking Crypto IKEV1 configs...')
         output = ssh_conn.send_command('sh run crypto ikev1')
         for x in output.split('\n'):
             for c in cryptoIkev:
-                if re.match(c, x):
+                if re.match(c, x.strip()):
                     check = False
                     failed.append(x)
         if not check:
@@ -137,7 +134,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         output = ssh_conn.send_command('sh run crypto ikev2')
         for x in output.split('\n'):
             for c in cryptoIkev:
-                if re.match(c, x):
+                if re.match(c, x.strip()):
                     check = False
                     failed.append(x)
         if not check:
@@ -148,7 +145,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         output = ssh_conn.send_command('sh inv')
         for x in output.split('\n'):
             for c in HWVersion:
-                if re.match('^PID: ASA5506 ', x) and re.findall(c, x):
+                if re.match('^PID: ASA5506 ', x.strip()) and re.findall(c, x.strip()):
                     hwCheck = False
         if not hwCheck:
             print('5506 Model is V01/02/03. Replace instead of upgrade.')
