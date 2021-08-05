@@ -114,11 +114,12 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                 if re.match(c, x):
                     check = False
                     failed.append(x)
-            if not check:
-                print('Invalid Crypyo Map Lines:')
-                for v in failed:
-                    print(v)
-                    failed = []
+        if not check:
+            print('Invalid Crypyo Map Lines:')
+            for v in failed:
+                print(v)
+                failed = []
+            check = True
         print('Checking Crypto IKEV1 configs...')
         output = ssh_conn.send_command('sh run crypto ikev1')
         for x in output.split('\n'):
@@ -127,8 +128,9 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                 if re.match(c, x):
                     check = False
                     failed.append(x)
-            if not check:
-                print('Found Ikev1 DH Group1 in config.')
+        if not check:
+            print('Found Ikev1 DH Group1 in config.')
+            check = True
         print('Checking Crypto IKEV2 configs...')
         output = ssh_conn.send_command('sh run crypto ikev2')
         for x in output.split('\n'):
@@ -137,8 +139,9 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                 if re.match(c, x):
                     check = False
                     failed.append(x)
-            if not check:
-                print('Found Ikev2 DH Group1 in config.')
+        if not check:
+            print('Found Ikev2 DH Group1 in config.')
+            check = True
         """Adding Hardware Version check for 5506"""
         print("Checking for 5506 hardware revision...")
         output = ssh_conn.send_command('sh inv')
@@ -147,8 +150,9 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
             for c in HWVersion:
                 if re.match('^PID: ASA5506 ', x) and re.findall(c, x):
                     hwCheck = False
-            if not hwCheck:
-                print('5506 Model is V01/02/03. Replace instead of upgrade.')
+        if not hwCheck:
+            print('5506 Model is V01/02/03. Replace instead of upgrade.')
+            hwCheck = True
 
     """Running Error Check"""
     errorCheck()
