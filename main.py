@@ -25,30 +25,9 @@ count = 1
 """"Grabbing Variables"""
 username = 'automation'
 password = getpass.getpass('Automation Password?\n')
-sfile = input('What is the ASAOS source file name?\n')
-rcheck = input('Do you want to update the ROMMON image? [Y/n]\n')
-
-'''Check if ASAOS Image is good or not'''
-if path.exists(sfile):
-    pass
-else:
-    print("ASAOS Image supplied does not exist in supplied location\n Exiting...")
-    exit()
-'''Check if ROMMON Image is good or not'''
-if rcheck.lower() == "y":
-    rommonfile = input("What is the ROMMON file name?\n")
-    if path.exists(rommonfile):
-        rommon = True
-        pass
-    else:
-        print("ROMMON Image supplied does not exist in supplied location\n Exiting...")
-        exit()
-else:
-    rommon = False
-    rommonfile = None
 
 
-def main(ip, user, psd, asaos, rstate=False, rfile=None):
+def main(ip, user, psd):
     """Upgrade Script for ASA Devices"""
     start_time = datetime.datetime.now()
 
@@ -96,14 +75,16 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         print('ASA Hardware Model: ' + hwnum)
         return hwnum
 
-    def transfer(source, destination, filesystem):
+    def transfer(source, destination, filesystem, imageName):
         with FileTransfer(ssh_conn, source_file=source, dest_file=destination,
                           file_system=filesystem) as scp_transfer:
 
             if not scp_transfer.check_file_exists():
                 if not scp_transfer.verify_space_available():
-                    raise ValueError("Insufficient space available on remote device")
-                print("\nTransferring file:\n" + str(source))
+                    raise ValueError("Insufficient space available on remote "
+                                     "device")
+                print("\nTransferring" + str(imageName) + "file:\n" +
+                      str(source))
                 try:
                     scp_transfer.transfer_file()
                 except scp.SCPException:
@@ -194,18 +175,14 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         asa5506 = True
     else:
         asa5506 = False
-    print('ASA OS Image to be used:')
-    print(asaImages[modelNum]['os'])
-    print('End of Test')
-    exit()
     """Running Error Check"""
     if not errorCheck():
         '''Transferring ASAOS and ROMMON Image'''
         transfer(asaImages[modelNum]['os'], asaImages[modelNum]['os'],
-                 dest_file_system)
-        if rstate and asa5506:
+                 dest_file_system, 'OS')
+        if asa5506:
             transfer(asaImages[modelNum]['rommon'], asaImages[modelNum]['rommon'],
-                     dest_file_system)
+                     dest_file_system, 'ROMMON')
         print("\nChecking for current boot lines and removing.")
         testb = ssh_conn.send_command('show run boot')
         if testb != "":
@@ -256,11 +233,11 @@ if clist is True:
         print(iline)
     for ip in lines:
         print(str(count) + ": " + str(ip))
-        main(ip, username, password, sfile, rommon, rommonfile)
+        main(ip, username, password)
         count += 1
 else:
     print("Single run on IP")
-    main(ip, username, password, sfile, rommon, rommonfile)
+    main(ip, username, password)
 
 print("================")
 print("===End Script===")
