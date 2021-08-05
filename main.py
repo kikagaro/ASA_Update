@@ -90,8 +90,8 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
     def errorCheck():
         """Config lines to check for"""
         cryptoMap = [
-            '^crypto map outside_map \d+? set pfs group1$',
-            '^crypto map outside_map \d+? set pfs$'
+            '^crypto map outside_map \d+? set pfs group1 $',
+            '^crypto map outside_map \d+? set pfs $'
         ]
         cryptoIkev = [
             '^ group 1$'
