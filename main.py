@@ -106,6 +106,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         hwCheck = True
         """check for Crypto Map changes/adjustments"""
         print('Checking Crypto configurations for possible problems.')
+        print('Checking Crypto map configs...')
         output = ssh_conn.send_command('sh run crypto map')
         for x in output:
             for c in cryptoMap:
@@ -117,6 +118,9 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                 for v in failed:
                     print(v)
                     failed = []
+            else:
+                print('Crypto Map Pass.')
+        print('Checking Crypto IKEV1 configs...')
         output = ssh_conn.send_command('sh run crypto ikev1')
         for x in output:
             for c in cryptoIkev:
@@ -125,6 +129,9 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                     failed.append(x)
             if not check:
                 print('Found Ikev1 DH Group1 in config.')
+            else:
+                print('Crypto IKEV1 Pass.')
+        print('Checking Crypto IKEV2 configs...')
         output = ssh_conn.send_command('sh run crypto ikev2')
         for x in output:
             for c in cryptoIkev:
@@ -133,7 +140,10 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                     failed.append(x)
             if not check:
                 print('Found Ikev2 DH Group1 in config.')
+            else:
+                print('Crypto IKVE2 Pass')
         """Adding Hardware Version check for 5506"""
+        print("Checking for 5506 hardware revision...")
         output = ssh_conn.send_command('sh inv')
         for x in output:
             for c in HWVersion:
@@ -141,6 +151,8 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                     hwCheck = False
             if not hwCheck:
                 print('5506 Model is V01/02/03. Replace instead of upgrade.')
+            else:
+                print('5506 Hardware Revision Pass.')
 
     """Running Error Check"""
     errorCheck()
