@@ -112,6 +112,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
             print(x)
             for c in cryptoMap:
                 if re.match(c, x):
+                    print('ERROR ERROR ERROR ERROR')
                     check = False
                     failed.append(x)
         print(check)
