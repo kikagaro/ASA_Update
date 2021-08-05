@@ -60,6 +60,24 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         'secret': psd,
         'port': 22
     }
+    asaImages = {
+        '5506': {
+            'os': 'asa9-14-2-15-lfbff-k8.SPA',
+            'rommon': 'asa5500-firmware-1118.SPA'
+        },
+        '5512': {
+            'os': 'asa9-12-4-26-smp-k8.bin'
+        },
+        '5515': {
+            'os': 'asa9-12-4-26-smp-k8.bin'
+        },
+        '5525': {
+            'os': 'asa9-12-4-26-smp-k8.bin'
+        },
+        '5545': {
+            'os': 'asa9-12-4-26-smp-k8.bin'
+        }
+    }
 
     print("Attempting login to ASA")
     try:
@@ -70,6 +88,18 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         exit()
 
     dest_file_system = 'disk0:'
+
+    def hwModel():
+        output = ssh_conn.send_command('show run | i Hardware')
+        for x in output.strip('\n'):
+            hwversion = re.findall('ASA\d+', x)
+            hwnum = hwversion[0].strip('ASA')
+        print(hwnum)
+        return hwnum
+
+    """Test"""
+    hwModel()
+    exit()
 
     def transfer(source, destination, filesystem):
         with FileTransfer(ssh_conn, source_file=source, dest_file=destination,
@@ -161,6 +191,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         else:
             print('Pass')
         return donotpassgo
+
     """Running Error Check"""
     if not errorCheck():
         '''Transferring ASAOS and ROMMON Image'''
