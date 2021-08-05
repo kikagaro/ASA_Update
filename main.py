@@ -194,6 +194,8 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         asa5506 = True
     else:
         asa5506 = False
+    print('ASA OS Image to be used:')
+    print(asaImages[modelNum]['os'])
     print('End of Test')
     exit()
     """Running Error Check"""
