@@ -83,7 +83,7 @@ def main(ip, user, psd):
                 if not scp_transfer.verify_space_available():
                     raise ValueError("Insufficient space available on remote "
                                      "device")
-                print("\nTransferring" + str(imageName) + "file:\n" +
+                print("\nTransferring " + str(imageName) + " file:\n" +
                       str(source))
                 try:
                     scp_transfer.transfer_file()
