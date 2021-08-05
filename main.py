@@ -91,19 +91,10 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
 
     def hwModel():
         output = ssh_conn.send_command('show run | i Hardware')
-        print(output)
         hwversion = re.search('ASA\d+', output.strip('\n'))
-        print(hwversion)
-        type(hwversion)
-        print('2')
         hwnum = hwversion[0].strip('ASA')
-        print(hwnum)
-        print('3')
+        print('ASA Hardware Model: ' + hwnum)
         return hwnum
-
-    """Test"""
-    hwModel()
-    exit()
 
     def transfer(source, destination, filesystem):
         with FileTransfer(ssh_conn, source_file=source, dest_file=destination,
@@ -182,26 +173,37 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
             print('Pass')
         """Adding Hardware Version check for 5506"""
         print("Checking for 5506 hardware revision...")
-        output = ssh_conn.send_command('sh inv')
-        for x in output.split('\n'):
-            for c in HWVersion:
-                if re.match('^PID: ASA5506 ', x.strip()) and re.findall(c, x.strip()):
-                    hwCheck = False
-        if not hwCheck:
-            print('5506 Model is V01/02/03. Replace instead of upgrade.')
-            hwCheck = True
-            donotpassgo = True
+        if asa5506:
+            output = ssh_conn.send_command('sh inv')
+            for x in output.split('\n'):
+                for c in HWVersion:
+                    if re.match('^PID: ASA5506 ', x.strip()) and re.findall(c, x.strip()):
+                        hwCheck = False
+            if not hwCheck:
+                print('5506 Model is V01/02/03. Replace instead of upgrade.')
+                hwCheck = True
+                donotpassgo = True
 
-        else:
-            print('Pass')
+            else:
+                print('Pass')
         return donotpassgo
 
+    """Checking ASA Hardware Model for OS Images and file checking"""
+    modelNum = hwModel()
+    if modelNum == '5506':
+        asa5506 = True
+    else:
+        asa5506 = False
+    print('End of Test')
+    exit()
     """Running Error Check"""
     if not errorCheck():
         '''Transferring ASAOS and ROMMON Image'''
-        transfer(asaos, asaos, dest_file_system)
-        if rstate:
-            transfer(rfile, rfile, dest_file_system)
+        transfer(asaImages[modelNum]['os'], asaImages[modelNum]['os'],
+                 dest_file_system)
+        if rstate and asa5506:
+            transfer(asaImages[modelNum]['rommon'], asaImages[modelNum]['rommon'],
+                     dest_file_system)
         print("\nChecking for current boot lines and removing.")
         testb = ssh_conn.send_command('show run boot')
         if testb != "":
@@ -213,7 +215,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
             for bline in bootlist:
                 ssh_conn.send_config_set('no ' + bline)
         print("\nSending current boot commands")
-        full_file_name = "{}/{}".format(dest_file_system, asaos)
+        full_file_name = "{}/{}".format(dest_file_system, asaImages[modelNum]['os'])
         boot_cmd = 'boot system {}'.format(full_file_name)
         output = ssh_conn.send_config_set([boot_cmd])
         print(output)
