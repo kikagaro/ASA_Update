@@ -111,7 +111,6 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         for x in output.split('\n'):
             for c in cryptoMap:
                 if re.match(c, x.strip()):
-                    print('ERROR ERROR ERROR ERROR')
                     check = False
                     failed.append(x)
         if not check:
@@ -120,13 +119,17 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                 print(v)
                 failed = []
             check = True
+            print('\n')
         print('Checking Crypto IKEV1 configs...')
         output = ssh_conn.send_command('sh run crypto ikev1')
         for x in output.split('\n'):
+            print(x)
             for c in cryptoIkev:
                 if re.match(c, x.strip()):
                     check = False
                     failed.append(x)
+        print(check)
+        exit()
         if not check:
             print('Found Ikev1 DH Group1 in config.')
             check = True
