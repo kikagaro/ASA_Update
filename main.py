@@ -125,7 +125,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         for x in output.split('\n'):
             print(x)
             for c in cryptoIkev:
-                if re.match(c, x.strip()):
+                if re.match(c, x):
                     check = False
                     failed.append(x)
         print(check)
