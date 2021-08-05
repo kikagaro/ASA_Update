@@ -90,8 +90,8 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
     def errorCheck():
         """Config lines to check for"""
         cryptoMap = [
-            '^crypto map outside_map \d+? set pfs group1 $',
-            '^crypto map outside_map \d+? set pfs $'
+            '^crypto map outside_map \d+? set pfs group1$',
+            '^crypto map outside_map \d+? set pfs$'
         ]
         cryptoIkev = [
             '^ group 1$'
@@ -111,7 +111,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         for x in output.split('\n'):
             print(x)
             for c in cryptoMap:
-                if re.match(c, x):
+                if re.match(c, x.strip()):
                     print('ERROR ERROR ERROR ERROR')
                     check = False
                     failed.append(x)
