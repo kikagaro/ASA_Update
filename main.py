@@ -90,8 +90,8 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
     def errorCheck():
         """Config lines to check for"""
         cryptoMap = [
-            'crypto map outside_map \d+? set pfs group1$',
-            'crypto map outside_map \d+? set pfs$'
+            '^crypto map outside_map \d+? set pfs group1$',
+            '^crypto map outside_map \d+? set pfs$'
         ]
         cryptoIkev = [
             '^ group 1$'
@@ -111,7 +111,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         for x in output.split('\n'):
             print(x)
             for c in cryptoMap:
-                if re.match(c, x):
+                if re.findall(c, x):
                     check = False
                     failed.append(x)
         if not check:
@@ -125,7 +125,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         for x in output.split('\n'):
             print(x)
             for c in cryptoIkev:
-                if re.match(c, x):
+                if re.findall(c, x):
                     check = False
                     failed.append(x)
         if not check:
@@ -136,7 +136,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         for x in output.split('\n'):
             print(x)
             for c in cryptoIkev:
-                if re.match(c, x):
+                if re.findall(c, x):
                     check = False
                     failed.append(x)
         if not check:
@@ -148,7 +148,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         for x in output.split('\n'):
             print(x)
             for c in HWVersion:
-                if re.match('^PID: ASA5506 ', x) and re.findall(c, x):
+                if re.findall('^PID: ASA5506 ', x) and re.findall(c, x):
                     hwCheck = False
         if not hwCheck:
             print('5506 Model is V01/02/03. Replace instead of upgrade.')
