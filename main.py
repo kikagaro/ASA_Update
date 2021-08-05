@@ -27,6 +27,7 @@ username = 'automation'
 password = getpass.getpass('Automation Password?\n')
 sfile = input('What is the ASAOS source file name?\n')
 rcheck = input('Do you want to update the ROMMON image? [Y/n]\n')
+donotpassgo = False
 
 '''Check if ASAOS Image is good or not'''
 if path.exists(sfile):
@@ -155,60 +156,60 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         if not hwCheck:
             print('5506 Model is V01/02/03. Replace instead of upgrade.')
             hwCheck = True
+            donotpassgo = True
+            return donotpassgo
         else:
             print('Pass')
 
     """Running Error Check"""
     errorCheck()
-    """Temp adding exit() to end script early while testing error check"""
-    break
-    exit()
-    '''Transferring ASAOS and ROMMON Image'''
-    transfer(asaos, asaos, dest_file_system)
-    if rstate:
-        transfer(rfile, rfile, dest_file_system)
-    print("\nChecking for current boot lines and removing.")
-    testb = ssh_conn.send_command('show run boot')
-    if testb != "":
-        print('Current Boot Lines: \n' + testb)
-        bootlist = []
-        for bootl in testb.split('\n'):
-            if bootl != "":
-                bootlist.append(bootl)
-        for bline in bootlist:
-            ssh_conn.send_config_set('no ' + bline)
-    print("\nSending current boot commands")
-    full_file_name = "{}/{}".format(dest_file_system, asaos)
-    boot_cmd = 'boot system {}'.format(full_file_name)
-    output = ssh_conn.send_config_set([boot_cmd])
-    print(output)
-    print("\nVerifying state")
-    output = ssh_conn.send_command('show boot')
-    output1 = ssh_conn.send_command('show version | i Appliance Software')
-    output2 = ssh_conn.send_command('show version | i register')
-    print(output)
-    print("Current ASAOS Version:\n" + output1)
-    print("Verify Config Registrar, should be 0x1:\n" + output2)
+    if donotpassgo:
+        '''Transferring ASAOS and ROMMON Image'''
+        transfer(asaos, asaos, dest_file_system)
+        if rstate:
+            transfer(rfile, rfile, dest_file_system)
+        print("\nChecking for current boot lines and removing.")
+        testb = ssh_conn.send_command('show run boot')
+        if testb != "":
+            print('Current Boot Lines: \n' + testb)
+            bootlist = []
+            for bootl in testb.split('\n'):
+                if bootl != "":
+                    bootlist.append(bootl)
+            for bline in bootlist:
+                ssh_conn.send_config_set('no ' + bline)
+        print("\nSending current boot commands")
+        full_file_name = "{}/{}".format(dest_file_system, asaos)
+        boot_cmd = 'boot system {}'.format(full_file_name)
+        output = ssh_conn.send_config_set([boot_cmd])
+        print(output)
+        print("\nVerifying state")
+        output = ssh_conn.send_command('show boot')
+        output1 = ssh_conn.send_command('show version | i Appliance Software')
+        output2 = ssh_conn.send_command('show version | i register')
+        print(output)
+        print("Current ASAOS Version:\n" + output1)
+        print("Verify Config Registrar, should be 0x1:\n" + output2)
 
-    print("\nWrite Config")
-    output = ssh_conn.send_command_expect('write mem')
-    print(output)
-    """Disabling This for now as Reloads are to be scheduled"""
-    '''
-    reload = input('Do you wish to apply the ROMMON upgrade or reboot now? [Y/n]\n')
-    if reload is 'Y' or 'y':
-        if rstate is True:
-            print('Applying ROMMON upgrade')
-            output = ssh_conn.send_command('upgrade rommon ' + dest_file_system + '/' + dest_rfile)
-            output += ssh_conn.send_command('y')
-            print(output)
-        else:
-            output = ssh_conn.send_command('reload')
-            output += ssh_conn.send_command('y')
-            print(output)
-    '''
-    print("\n>>>> {}".format(datetime.datetime.now() - start_time))
-    print()
+        print("\nWrite Config")
+        output = ssh_conn.send_command_expect('write mem')
+        print(output)
+        """Disabling This for now as Reloads are to be scheduled"""
+        '''
+        reload = input('Do you wish to apply the ROMMON upgrade or reboot now? [Y/n]\n')
+        if reload is 'Y' or 'y':
+            if rstate is True:
+                print('Applying ROMMON upgrade')
+                output = ssh_conn.send_command('upgrade rommon ' + dest_file_system + '/' + dest_rfile)
+                output += ssh_conn.send_command('y')
+                print(output)
+            else:
+                output = ssh_conn.send_command('reload')
+                output += ssh_conn.send_command('y')
+                print(output)
+        '''
+        print("\n>>>> {}".format(datetime.datetime.now() - start_time))
+        print()
 
 
 if clist is True:
