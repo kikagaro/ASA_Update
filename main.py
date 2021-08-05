@@ -161,6 +161,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
     """Running Error Check"""
     errorCheck()
     """Temp adding exit() to end script early while testing error check"""
+    break
     exit()
     '''Transferring ASAOS and ROMMON Image'''
     transfer(asaos, asaos, dest_file_system)
