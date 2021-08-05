@@ -27,7 +27,6 @@ username = 'automation'
 password = getpass.getpass('Automation Password?\n')
 sfile = input('What is the ASAOS source file name?\n')
 rcheck = input('Do you want to update the ROMMON image? [Y/n]\n')
-donotpassgo = False
 
 '''Check if ASAOS Image is good or not'''
 if path.exists(sfile):
@@ -105,6 +104,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         failed = []
         check = True
         hwCheck = True
+        donotpassgo = False
         """check for Crypto Map changes/adjustments"""
         print('Checking Crypto configurations for possible problems.')
         print('Checking Crypto map configs...')
@@ -157,13 +157,12 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
             print('5506 Model is V01/02/03. Replace instead of upgrade.')
             hwCheck = True
             donotpassgo = True
-            return donotpassgo
+
         else:
             print('Pass')
-
+        return donotpassgo
     """Running Error Check"""
-    errorCheck()
-    if donotpassgo:
+    if not errorCheck():
         '''Transferring ASAOS and ROMMON Image'''
         transfer(asaos, asaos, dest_file_system)
         if rstate:
