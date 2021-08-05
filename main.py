@@ -108,7 +108,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         print('Checking Crypto configurations for possible problems.')
         print('Checking Crypto map configs...')
         output = ssh_conn.send_command('sh run crypto map')
-        for x in output:
+        for x in output.split('\n'):
             print(x)
             for c in cryptoMap:
                 if re.match(c, x):
@@ -121,7 +121,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                     failed = []
         print('Checking Crypto IKEV1 configs...')
         output = ssh_conn.send_command('sh run crypto ikev1')
-        for x in output:
+        for x in output.split('\n'):
             print(x)
             for c in cryptoIkev:
                 if re.match(c, x):
@@ -131,7 +131,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                 print('Found Ikev1 DH Group1 in config.')
         print('Checking Crypto IKEV2 configs...')
         output = ssh_conn.send_command('sh run crypto ikev2')
-        for x in output:
+        for x in output.split('\n'):
             print(x)
             for c in cryptoIkev:
                 if re.match(c, x):
@@ -142,7 +142,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
         """Adding Hardware Version check for 5506"""
         print("Checking for 5506 hardware revision...")
         output = ssh_conn.send_command('sh inv')
-        for x in output:
+        for x in output.split('\n'):
             print(x)
             for c in HWVersion:
                 if re.match('^PID: ASA5506 ', x) and re.findall(c, x):
