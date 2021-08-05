@@ -126,7 +126,8 @@ def main(ip, user, psd):
                 print(v)
             print('Commands to fix after reboot:')
             for v in failed:
-                print(v + ' group2')
+                print(v + 'group2')
+            print('If any of these are group1, work with customer to update.')
             check = True
         else:
             print("Pass")
@@ -139,6 +140,7 @@ def main(ip, user, psd):
                     failed.append(x)
         if not check:
             print('Found Ikev1 DH Group1 in config.')
+            print('Work with customer to update to group 5 or 14.')
             check = True
         else:
             print('Pass')
@@ -151,6 +153,7 @@ def main(ip, user, psd):
                     failed.append(x)
         if not check:
             print('Found Ikev2 DH Group1 in config.')
+            print('Image to be used:\n' + asaImages[modelNum]['os'] + '\n')
             check = True
         else:
             print('Pass')
