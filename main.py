@@ -62,9 +62,11 @@ def main(ip, user, psd):
     try:
         ssh_conn = ConnectHandler(**asa_device)
         print('Login Successful\n')
+        login = True
     except:
         print('Login Failed')
-        exit()
+        login = False
+
 
     dest_file_system = 'disk0:'
 
@@ -174,67 +176,68 @@ def main(ip, user, psd):
                 print('Pass')
         return donotpassgo
 
-    """Checking ASA Hardware Model for OS Images and file checking"""
-    modelNum = hwModel()
-    if modelNum == '5506':
-        asa5506 = True
-    else:
-        asa5506 = False
-    print('Image to be used:\n' + asaImages[modelNum]['os'] + '\n')
-    if asa5506:
-        print('Rommon image to be used: ' + asaImages[modelNum]['rommon'] + '\n')
-    """Running Error Check"""
-    if not errorCheck():
-        '''Transferring ASAOS and ROMMON Image'''
-        try:
-            transfer(asaImages[modelNum]['os'], asaImages[modelNum]['os'],
-                     dest_file_system, 'OS')
-            if asa5506:
-                transfer(asaImages[modelNum]['rommon'], asaImages[modelNum]['rommon'],
-                         dest_file_system, 'ROMMON')
-        except EOFError as e:
-            print(e)
-            pass
-        print("\nChecking for current boot lines and removing.")
-        testb = ssh_conn.send_command('show run boot')
-        if testb != "":
-            print('Current Boot Lines: \n' + testb)
-            bootlist = []
-            for bootl in testb.split('\n'):
-                if bootl != "":
-                    bootlist.append(bootl)
-            for bline in bootlist:
-                ssh_conn.send_config_set('no ' + bline)
-        print("\nSending current boot commands")
-        full_file_name = "{}/{}".format(dest_file_system, asaImages[modelNum]['os'])
-        boot_cmd = 'boot system {}'.format(full_file_name)
-        output = ssh_conn.send_config_set([boot_cmd])
-        print(output)
-        print("\nVerifying state")
-        output = ssh_conn.send_command('show boot')
-        output1 = ssh_conn.send_command('show version | i Appliance Software')
-        output2 = ssh_conn.send_command('show version | i register')
-        print(output)
-        print("Current ASAOS Version:\n" + output1)
-        print("Verify Config Registrar, should be 0x1:\n" + output2)
+    if login:
+        """Checking ASA Hardware Model for OS Images and file checking"""
+        modelNum = hwModel()
+        if modelNum == '5506':
+            asa5506 = True
+        else:
+            asa5506 = False
+        print('Image to be used:\n' + asaImages[modelNum]['os'] + '\n')
+        if asa5506:
+            print('Rommon image to be used: ' + asaImages[modelNum]['rommon'] + '\n')
+        """Running Error Check"""
+        if not errorCheck():
+            '''Transferring ASAOS and ROMMON Image'''
+            try:
+                transfer(asaImages[modelNum]['os'], asaImages[modelNum]['os'],
+                         dest_file_system, 'OS')
+                if asa5506:
+                    transfer(asaImages[modelNum]['rommon'], asaImages[modelNum]['rommon'],
+                             dest_file_system, 'ROMMON')
+            except EOFError as e:
+                print(e)
+                pass
+            print("\nChecking for current boot lines and removing.")
+            testb = ssh_conn.send_command('show run boot')
+            if testb != "":
+                print('Current Boot Lines: \n' + testb)
+                bootlist = []
+                for bootl in testb.split('\n'):
+                    if bootl != "":
+                        bootlist.append(bootl)
+                for bline in bootlist:
+                    ssh_conn.send_config_set('no ' + bline)
+            print("\nSending current boot commands")
+            full_file_name = "{}/{}".format(dest_file_system, asaImages[modelNum]['os'])
+            boot_cmd = 'boot system {}'.format(full_file_name)
+            output = ssh_conn.send_config_set([boot_cmd])
+            print(output)
+            print("\nVerifying state")
+            output = ssh_conn.send_command('show boot')
+            output1 = ssh_conn.send_command('show version | i Appliance Software')
+            output2 = ssh_conn.send_command('show version | i register')
+            print(output)
+            print("Current ASAOS Version:\n" + output1)
+            print("Verify Config Registrar, should be 0x1:\n" + output2)
 
-        print("\nWrite Config")
-        output = ssh_conn.send_command_expect('write mem')
-        print(output)
-        """Disabling This for now as Reloads are to be scheduled"""
-        '''
-        reload = input('Do you wish to apply the ROMMON upgrade or reboot now? [Y/n]\n')
-        if reload is 'Y' or 'y':
-            if rstate is True:
-                print('Applying ROMMON upgrade')
-                output = ssh_conn.send_command('upgrade rommon ' + dest_file_system + '/' + dest_rfile)
-                output += ssh_conn.send_command('y')
-                print(output)
-            else:
-                output = ssh_conn.send_command('reload')
-                output += ssh_conn.send_command('y')
-                print(output)
-        '''
+            print("\nWrite Config")
+            output = ssh_conn.send_command_expect('write mem')
+            print(output)
+            """Disabling This for now as Reloads are to be scheduled"""
+            '''
+            reload = input('Do you wish to apply the ROMMON upgrade or reboot now? [Y/n]\n')
+            if reload is 'Y' or 'y':
+                if rstate is True:
+                    print('Applying ROMMON upgrade')
+                    output = ssh_conn.send_command('upgrade rommon ' + dest_file_system + '/' + dest_rfile)
+                    output += ssh_conn.send_command('y')
+                    print(output)
+                else:
+                    output = ssh_conn.send_command('reload')
+                    output += ssh_conn.send_command('y')
+                    print(output)
+            '''
     print("\n>>>> {}".format(datetime.datetime.now() - start_time))
     print()
 
