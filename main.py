@@ -73,6 +73,7 @@ def main(ip, user, psd):
         hwversion = re.search('ASA\d+', output.strip('\n'))
         hwnum = hwversion[0].strip('ASA')
         print('ASA Hardware Model: ' + hwnum)
+        print('Image to be used:\n' + asaImages[modelNum]['os'] + '\n')
         return hwnum
 
     def transfer(source, destination, filesystem, imageName):
@@ -124,7 +125,9 @@ def main(ip, user, psd):
             print('Invalid Crypyo Map Lines:')
             for v in failed:
                 print(v)
-                failed = []
+            print('Commands to fix after reboot:')
+            for v in failed:
+                print(v + ' group2')
             check = True
         else:
             print("Pass")
@@ -153,8 +156,8 @@ def main(ip, user, psd):
         else:
             print('Pass')
         """Adding Hardware Version check for 5506"""
-        print("Checking for 5506 hardware revision...")
         if asa5506:
+            print("Checking for 5506 hardware revision...")
             output = ssh_conn.send_command('sh inv')
             for x in output.split('\n'):
                 for c in HWVersion:
@@ -227,13 +230,13 @@ def main(ip, user, psd):
                 output += ssh_conn.send_command('y')
                 print(output)
         '''
-        print("\n>>>> {}".format(datetime.datetime.now() - start_time))
-        print()
+    print("\n>>>> {}".format(datetime.datetime.now() - start_time))
+    print()
 
 
 if clist is True:
     print("Loading from list of IPs")
-    for iline in lines:
+    for iline in lines.strip():
         print(iline)
     for ip in lines:
         print(str(count) + ": " + str(ip))
