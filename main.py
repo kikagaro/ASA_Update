@@ -45,6 +45,7 @@ if rcheck.lower() == "y":
         exit()
 else:
     rommon = False
+    rommonfile = None
 
 
 def main(ip, user, psd, asaos, rstate=False, rfile=None):
@@ -147,7 +148,7 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
     exit()
     '''Transferring ASAOS and ROMMON Image'''
     transfer(asaos, asaos, dest_file_system)
-    if rstate is True:
+    if rstate:
         transfer(rfile, rfile, dest_file_system)
     print("\nChecking for current boot lines and removing.")
     testb = ssh_conn.send_command('show run boot')
