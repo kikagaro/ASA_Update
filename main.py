@@ -3,12 +3,13 @@ import scp
 from netmiko import ConnectHandler, FileTransfer
 import getpass
 import datetime
+import re
 from os import path
 
 '''Test if list file exist'''
 if path.exists("list.txt"):
     q = input('list.txt detected.\nDo you want to use list.txt? [Y/n]\n')
-    if q is 'y' or 'Y':
+    if q.lower() == 'y':
         clist = True
         lfile = open("list.txt", 'r')
         lines = lfile.readlines()
@@ -34,7 +35,7 @@ else:
     print("ASAOS Image supplied does not exist in supplied location\n Exiting...")
     exit()
 '''Check if ROMMON Image is good or not'''
-if rcheck is "Y" or "y":
+if rcheck.lower() == "y":
     rommonfile = input("What is the ROMMON file name?\n")
     if path.exists(rommonfile):
         rommon = True
@@ -83,7 +84,68 @@ def main(ip, user, psd, asaos, rstate=False, rfile=None):
                     pass
                 print("\nTransfer Complete\n")
 
-    '''Transfering ASAOS and ROMMON Image'''
+    """Function to check for errors that could occur during upload
+    and reboot process."""
+    def errorCheck():
+        """Config lines to check for"""
+        cryptoMap = [
+            'crypto map outside_map \d+? set pfs group1$',
+            'crypto map outside_map \d+? set pfs$'
+        ]
+        cryptoIkev = [
+            '^ group 1$'
+        ]
+        HWVersion = [
+            'V01',
+            'V02',
+            'V03'
+        ]
+        failed = []
+        check = True
+        hwCheck = True
+        """check for Crypto Map changes/adjustments"""
+        print('Checking Crypto configurations for possible problems.')
+        output = ssh_conn.send_command('sh run crypto map')
+        for x in output:
+            for c in cryptoMap:
+                if re.match(c, x):
+                    check = False
+                    failed.append(x)
+            if not check:
+                print('Invalid Crypyo Map Lines:')
+                for v in failed:
+                    print(v)
+                    failed = []
+        output = ssh_conn.send_command('sh run crypto ikev1')
+        for x in output:
+            for c in cryptoIkev:
+                if re.match(c, x):
+                    check = False
+                    failed.append(x)
+            if not check:
+                print('Found Ikev1 DH Group1 in config.')
+        output = ssh_conn.send_command('sh run crypto ikev2')
+        for x in output:
+            for c in cryptoIkev:
+                if re.match(c, x):
+                    check = False
+                    failed.append(x)
+            if not check:
+                print('Found Ikev2 DH Group1 in config.')
+        """Adding Hardware Version check for 5506"""
+        output = ssh_conn.send_command('sh inv')
+        for x in output:
+            for c in HWVersion:
+                if re.match('^PID: ASA5506 ', x) and re.findall(c, x):
+                    hwCheck = False
+            if not hwCheck:
+                print('5506 Model is V01/02/03. Replace instead of upgrade.')
+
+    """Running Error Check"""
+    errorCheck()
+    """Temp adding exit() to end script early while testing error check"""
+    exit()
+    '''Transferring ASAOS and ROMMON Image'''
     transfer(asaos, asaos, dest_file_system)
     if rstate is True:
         transfer(rfile, rfile, dest_file_system)
