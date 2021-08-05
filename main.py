@@ -178,11 +178,15 @@ def main(ip, user, psd):
     """Running Error Check"""
     if not errorCheck():
         '''Transferring ASAOS and ROMMON Image'''
-        transfer(asaImages[modelNum]['os'], asaImages[modelNum]['os'],
-                 dest_file_system, 'OS')
-        if asa5506:
-            transfer(asaImages[modelNum]['rommon'], asaImages[modelNum]['rommon'],
-                     dest_file_system, 'ROMMON')
+        try:
+            transfer(asaImages[modelNum]['os'], asaImages[modelNum]['os'],
+                     dest_file_system, 'OS')
+            if asa5506:
+                transfer(asaImages[modelNum]['rommon'], asaImages[modelNum]['rommon'],
+                         dest_file_system, 'ROMMON')
+        except EOFError as e:
+            print(e)
+            pass
         print("\nChecking for current boot lines and removing.")
         testb = ssh_conn.send_command('show run boot')
         if testb != "":
