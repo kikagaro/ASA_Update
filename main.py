@@ -45,7 +45,7 @@ def main(ip, user, psd):
             'rommon': 'asa5500-firmware-1118.SPA'
         },
         '5512': {
-            'os': 'asa9-12-4-26-smp-k8.bin'
+            'os': 'asa9-12-4-29-smp-k8.bin'
         },
         '5515': {
             'os': 'asa9-12-4-29-smp-k8.bin'
