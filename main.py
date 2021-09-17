@@ -41,20 +41,20 @@ def main(ip, user, psd):
     }
     asaImages = {
         '5506': {
-            'os': 'asa9-14-2-15-lfbff-k8.SPA',
+            'os': 'asa9-15-1-16-lfbff-k8.SPA',
             'rommon': 'asa5500-firmware-1118.SPA'
         },
         '5512': {
             'os': 'asa9-12-4-26-smp-k8.bin'
         },
         '5515': {
-            'os': 'asa9-12-4-26-smp-k8.bin'
+            'os': 'asa9-12-4-29-smp-k8.bin'
         },
         '5525': {
-            'os': 'asa9-12-4-26-smp-k8.bin'
+            'os': 'asa9-12-4-29-smp-k8.bin'
         },
         '5545': {
-            'os': 'asa9-12-4-26-smp-k8.bin'
+            'os': 'asa9-12-4-29-smp-k8.bin'
         }
     }
 
