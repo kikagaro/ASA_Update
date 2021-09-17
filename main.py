@@ -185,7 +185,7 @@ def main(ip, user, psd):
             asa5506 = False
         print('Image to be used:\n' + asaImages[modelNum]['os'] + '\n')
         if asa5506:
-            print('Rommon image to be used: ' + asaImages[modelNum]['rommon'] + '\n')
+            print('Rommon image to be used: \n' + asaImages[modelNum]['rommon'] + '\n')
         """Running Error Check"""
         if not errorCheck():
             '''Transferring ASAOS and ROMMON Image'''
